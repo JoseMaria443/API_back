@@ -1,35 +1,44 @@
 import axios from 'axios';
-import type { IGame, IGenre } from '../interfaces/apiInterfaces.js';
+import type { IGamesResponse, IGenresResponse } from '../interfaces/apiInterfaces.js';
 
 const API_BASE_URL = 'https://api.rawg.io/api';
 const API_KEY = process.env.API_KEY;
 
-export const getGames = async (search?: string): Promise<IGame[]> => {
+export const getGames = async (search?: string, genres?: string, pageSize?: string, ordering?: string): Promise<IGamesResponse> => {
   try {
     const params: any = {
       key: API_KEY,
-      page_size: 20,
-      ordering: '-rating'
+      page_size: pageSize || 20,
+      ordering: ordering || '-rating'
     };
 
     if (search) {
       params.search = search;
     }
 
-    const response = await axios.get(`${API_BASE_URL}/games`, { params });
-
-    if (!response.data.results) {
-      throw new Error('No results found in RAWG API response');
+    if (genres) {
+      params.genres = genres;
     }
 
-    return response.data.results;
+    const response = await axios.get(`${API_BASE_URL}/games`, { params });
+
+    if (!response.data) {
+      throw new Error('No data received from RAWG API');
+    }
+
+    return {
+      count: response.data.count || 0,
+      next: response.data.next || null,
+      previous: response.data.previous || null,
+      results: response.data.results || []
+    };
   } catch (error: any) {
     console.error('RAWG API Error:', error.response?.data || error.message);
     throw new Error(`Error al consumir la API de RAWG: ${error.response?.data?.detail || error.message}`);
   }
 };
 
-export const getGenres = async (): Promise<IGenre[]> => {
+export const getGenres = async (): Promise<IGenresResponse> => {
   try {
     const response = await axios.get(`${API_BASE_URL}/genres`, {
       params: {
@@ -37,11 +46,16 @@ export const getGenres = async (): Promise<IGenre[]> => {
       }
     });
 
-    if (!response.data.results) {
-      throw new Error('No genres found in RAWG API response');
+    if (!response.data) {
+      throw new Error('No data received from RAWG API');
     }
 
-    return response.data.results;
+    return {
+      count: response.data.count || 0,
+      next: response.data.next || null,
+      previous: response.data.previous || null,
+      results: response.data.results || []
+    };
   } catch (error: any) {
     console.error('RAWG API Error:', error.response?.data || error.message);
     throw new Error(`Error al consumir la API de géneros de RAWG: ${error.response?.data?.detail || error.message}`);
