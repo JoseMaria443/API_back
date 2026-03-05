@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { getData } from '../controllers/dataController.js';
+import { getGames, getGenres } from '../controllers/dataController.js';
 
 const router = Router();
 
-router.get('/data', getData);
+router.get('/games', getGames);
+router.get('/genres', getGenres);
 
 export default router;

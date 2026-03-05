@@ -1,31 +1,49 @@
 import axios from 'axios';
-import type { IExternalData } from '../interfaces/apiInterfaces.js';
+import type { IGame, IGenre } from '../interfaces/apiInterfaces.js';
 
-const API_URL = process.env.EXTERNAL_API_URL;
+const API_BASE_URL = 'https://api.rawg.io/api';
 const API_KEY = process.env.API_KEY;
 
-export const getExternalData = async (): Promise<IExternalData[]> => {
+export const getGames = async (search?: string): Promise<IGame[]> => {
   try {
-    const response = await axios.get(API_URL!, {
-      params: {
-        key: API_KEY,
-        ordering: '-added',
-        page_size: 20
-      }
-    });
+    const params: any = {
+      key: API_KEY,
+      page_size: 20,
+      ordering: '-rating'
+    };
+
+    if (search) {
+      params.search = search;
+    }
+
+    const response = await axios.get(`${API_BASE_URL}/games`, { params });
 
     if (!response.data.results) {
       throw new Error('No results found in RAWG API response');
     }
 
-    return response.data.results.map((item: any) => ({
-      id: item.id,
-      title: item.name,
-      description: item.description || "Sin descripción",
-      image_url: item.background_image || ""
-    }));
+    return response.data.results;
   } catch (error: any) {
     console.error('RAWG API Error:', error.response?.data || error.message);
     throw new Error(`Error al consumir la API de RAWG: ${error.response?.data?.detail || error.message}`);
+  }
+};
+
+export const getGenres = async (): Promise<IGenre[]> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/genres`, {
+      params: {
+        key: API_KEY
+      }
+    });
+
+    if (!response.data.results) {
+      throw new Error('No genres found in RAWG API response');
+    }
+
+    return response.data.results;
+  } catch (error: any) {
+    console.error('RAWG API Error:', error.response?.data || error.message);
+    throw new Error(`Error al consumir la API de géneros de RAWG: ${error.response?.data?.detail || error.message}`);
   }
 };

@@ -1,6 +1,15 @@
-export interface IExternalData {
+export interface IGame {
     id: number;
-    title: string;
-    description: string;
-    image_url: string;
+    name: string;
+    background_image: string;
+    rating: number;
+    released: string;
+    genres: { id: number; name: string }[];
+}
+
+export interface IGenre {
+    id: number;
+    name: string;
+    games_count: number;
+    image_background: string;
 }
