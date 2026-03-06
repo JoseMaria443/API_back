@@ -4,7 +4,7 @@ import type { IGamesResponse, IGenresResponse } from '../interfaces/apiInterface
 const API_BASE_URL = 'https://api.rawg.io/api';
 const API_KEY = process.env.API_KEY;
 
-export const getGames = async (search?: string, genres?: string, pageSize?: string, ordering?: string): Promise<IGamesResponse> => {
+export const getGames = async (search?: string, genres?: string, pageSize?: string, ordering?: string, page?: string): Promise<IGamesResponse> => {
   try {
     const params: any = {
       key: API_KEY,
@@ -18,6 +18,10 @@ export const getGames = async (search?: string, genres?: string, pageSize?: stri
 
     if (genres) {
       params.genres = genres;
+    }
+
+    if (page) {
+      params.page = page;
     }
 
     const response = await axios.get(`${API_BASE_URL}/games`, { params });
@@ -59,5 +63,62 @@ export const getGenres = async (): Promise<IGenresResponse> => {
   } catch (error: any) {
     console.error('RAWG API Error:', error.response?.data || error.message);
     throw new Error(`Error al consumir la API de géneros de RAWG: ${error.response?.data?.detail || error.message}`);
+  }
+};
+
+export const getGameDetails = async (gameId: number): Promise<any> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/games/${gameId}`, {
+      params: {
+        key: API_KEY
+      }
+    });
+
+    if (!response.data) {
+      throw new Error('No game details found in RAWG API response');
+    }
+
+    return response.data;
+  } catch (error: any) {
+    console.error('RAWG API Error:', error.response?.data || error.message);
+    throw new Error(`Error al consumir detalles del juego: ${error.response?.data?.detail || error.message}`);
+  }
+};
+
+export const getGameScreenshots = async (gameId: number): Promise<any> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/games/${gameId}/screenshots`, {
+      params: {
+        key: API_KEY
+      }
+    });
+
+    if (!response.data) {
+      throw new Error('No screenshots found in RAWG API response');
+    }
+
+    return response.data;
+  } catch (error: any) {
+    console.error('RAWG API Error:', error.response?.data || error.message);
+    throw new Error(`Error al consumir screenshots del juego: ${error.response?.data?.detail || error.message}`);
+  }
+};
+
+export const getGameTrailers = async (gameId: number): Promise<any> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/games/${gameId}/movies`, {
+      params: {
+        key: API_KEY
+      }
+    });
+
+    if (!response.data) {
+      throw new Error('No trailers found in RAWG API response');
+    }
+
+    return response.data;
+  } catch (error: any) {
+    console.error('RAWG API Error:', error.response?.data || error.message);
+    throw new Error(`Error al consumir trailers del juego: ${error.response?.data?.detail || error.message}`);
   }
 };

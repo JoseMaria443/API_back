@@ -1,9 +1,12 @@
 import { Router } from 'express';
-import { getGames, getGenres } from '../controllers/dataController.js';
+import { getGameDetails, getGameScreenshots, getGameTrailers, getGames, getGenres } from '../controllers/dataController.js';
 
 const router = Router();
 
 router.get('/games', getGames);
+router.get('/games/:gameId', getGameDetails);
+router.get('/games/:gameId/screenshots', getGameScreenshots);
+router.get('/games/:gameId/movies', getGameTrailers);
 router.get('/genres', getGenres);
 
 export default router;

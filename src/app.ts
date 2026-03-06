@@ -6,7 +6,6 @@ import apiRoutes from './routes/api.routes.js';
 const app: Application = express();
 const PORT = process.env.PORT || 4000;
 
-// CORS configuration - permite múltiples orígenes de localhost
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:3001',
@@ -16,15 +15,12 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Permite requests sin origin (como apps móviles o curl)
         if (!origin) return callback(null, true);
         
-        // Permite cualquier localhost en desarrollo
         if (origin.startsWith('http://localhost:')) {
             return callback(null, true);
         }
         
-        // Permite orígenes específicos
         if (allowedOrigins.includes(origin)) {
             return callback(null, true);
         }
